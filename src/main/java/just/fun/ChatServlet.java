@@ -11,6 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -55,32 +56,14 @@ public class ChatServlet extends CommonChatServlet {
 
 	private String readBody(HttpServletRequest req) throws IOException {
 		Reader reader = null;
-		StringWriter writer = null;
+		StringWriter writer = new StringWriter();
 		try {
 			reader = req.getReader();
-			writer = new StringWriter();
-			char[] buffer = new char[512];
-			int length;
-			while ((length = reader.read(buffer)) == 512) {
-				writer.write(buffer);
-			}
-			writer.write(buffer, 0, length);
+			IOUtils.copy(reader, writer);
 			return writer.toString();
 		} finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					warn("Error close reader", e);
-				}
-			}
-			if (writer != null) {
-				try {
-					writer.close();
-				} catch (IOException e) {
-					warn("Error close writer", e);
-				}
-			}
+			IOUtils.closeQuietly(reader);
+			IOUtils.closeQuietly(writer);
 		}
 	}
 
@@ -97,13 +80,8 @@ public class ChatServlet extends CommonChatServlet {
 		} catch (IOException e) {
 			error("Error working with stream", e);
 		} finally {
-			try {
-				writer.close();
-			} catch (IOException e) {
-				warn("Error close writer", e);
-			}
+			IOUtils.closeQuietly(writer);
 		}
 		return "";
 	}
-
 }
