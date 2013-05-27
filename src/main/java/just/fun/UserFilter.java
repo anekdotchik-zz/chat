@@ -13,8 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 public class UserFilter implements Filter {
+	public void init(FilterConfig fConfig) throws ServletException {
+		// do nothing
+	}
 
 	public void destroy() {
+		// do nothing
 	}
 
 	public void doFilter(ServletRequest request, ServletResponse response,
@@ -33,8 +37,4 @@ public class UserFilter implements Filter {
 			chain.doFilter(request, response);
 		}
 	}
-
-	public void init(FilterConfig fConfig) throws ServletException {
-	}
-
 }

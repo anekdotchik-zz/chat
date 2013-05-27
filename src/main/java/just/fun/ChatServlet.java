@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,8 +15,8 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-public class ChatServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+public class ChatServlet extends CommonChatServlet {
+	private static final long serialVersionUID = -2197719945729108834L;
 
 	private List<Message> messages = new CopyOnWriteArrayList<Message>();
 
@@ -54,14 +53,6 @@ public class ChatServlet extends HttpServlet {
 		}
 	}
 
-	private String getParam(HttpServletRequest req, String name) {
-		String param = req.getParameter(name);
-		if (param == null) {
-			param = "";
-		}
-		return param;
-	}
-
 	private String readBody(HttpServletRequest req) throws IOException {
 		Reader reader = null;
 		StringWriter writer = null;
@@ -80,37 +71,36 @@ public class ChatServlet extends HttpServlet {
 				try {
 					reader.close();
 				} catch (IOException e) {
-					// FIXME add warning to log
+					warn("Error close reader", e);
 				}
 			}
 			if (writer != null) {
 				try {
 					writer.close();
 				} catch (IOException e) {
-					// FIXME add warning to log
+					warn("Error close writer", e);
 				}
 			}
-
 		}
 	}
 
 	private String serialize(Object obj) {
 		ObjectMapper mapper = new ObjectMapper();
-		StringWriter stringWriter = new StringWriter();
+		StringWriter writer = new StringWriter();
 		try {
-			mapper.writeValue(stringWriter, obj);
-			return stringWriter.toString();
+			mapper.writeValue(writer, obj);
+			return writer.toString();
 		} catch (JsonGenerationException e) {
-			e.printStackTrace();
+			error("Error json generation", e);
 		} catch (JsonMappingException e) {
-			e.printStackTrace();
+			error("Error json mappings", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			error("Error working with stream", e);
 		} finally {
 			try {
-				stringWriter.close();
+				writer.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				warn("Error close writer", e);
 			}
 		}
 		return "";
