@@ -16,7 +16,7 @@
             <tr>
                 <td><label for="pass">Pass:</label></td>
                 <td><input type="password" name="pass"
-                    onkeyup="if (event.keyCode == 13) {document.getElementById('login').submit();}" /></td>
+                    onkeyup="if (event.keyCode === 13) {document.getElementById('login').submit();};" /></td>
             </tr>
             <tr>
                 <td></td>
